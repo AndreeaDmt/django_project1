@@ -1,0 +1,117 @@
+
+{% extends "./base.html" %}
+
+{% load static %}
+
+
+{% block content %}
+
+
+    <!-- Introduction section -->
+  
+    <section class="py-4 text-center container">
+
+        <div class="row py-lg-5">
+        
+            <div class="col-lg-6 col-md-8 mx-auto">
+                
+
+                <h4> Hi! Welcome to my bookstore! </h4>
+
+
+                <br>
+                
+
+                <p class="lead text-muted">
+
+                Browse and shop the extensive collection of books.
+
+                </p>
+
+
+                <br>
+        
+                <a href="{% url 'register' %}" class="btn btn-primary my-2"> Create an account </a>
+                
+                
+            </div>
+        
+        </div>
+
+    
+    </section>
+
+    <!-- All products section -->
+      
+    <div class="album py-5 bg-light">
+        
+        <div class="container">
+    
+          <div class="pb-3 h5"> All books </div>
+
+
+          <hr>
+
+          <br>
+          
+
+          <div class="row row-cols-1 row-cols-sm-2 row-cols-md-5 g-3">
+           
+            {% for book in books %}
+
+             <div class="col">
+
+               <div class="card shadow-sm">
+
+                 <img class="img-fluid" alt="Responsive image" src="{{book.image}}">
+
+                 <div class="card-body">
+
+                   <p class="card-text">
+
+                     <h4></h4><a href="{% url 'book-info' book.slug %}"> {{book.title | capfirst}}  </a></h4>
+
+                     <p class="mb-0 text-white-50"> {{book.author | capfirst }} </p>
+
+
+                   </p>
+
+                   <div class="d-flex justify-content-between align-items-center">
+
+                     <h5> {{book.price}} RON </h5> 
+
+                   </div>
+
+                 </div>
+
+               </div>
+            
+             </div>
+
+
+             {% endfor %}
+             
+             
+    
+            
+    
+ 
+    
+            
+    
+          </div>
+
+        </div>
+
+      </div>
+
+
+
+
+{% endblock %}
+
+
+
+
+
+
