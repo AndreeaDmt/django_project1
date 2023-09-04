@@ -1,5 +1,4 @@
 from decimal import Decimal
-
 from . models import Book
 
 class Cart():

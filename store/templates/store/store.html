@@ -6,6 +6,23 @@
 
 {% block content %}
 
+<style>
+
+
+  body{
+
+
+      background-color: rgb(0, 0, 0);
+      background-image: url("https://wallpaperaccess.com/full/6553651.jpg");
+      background-size: cover;
+      background-position: center;
+
+
+  }
+
+
+
+</style>
 
     <!-- Introduction section -->
   
@@ -22,7 +39,7 @@
                 <br>
                 
 
-                <p class="lead text-muted">
+                <p class="lead text-white">
 
                 Browse and shop the extensive collection of books.
 
@@ -30,8 +47,16 @@
 
 
                 <br>
+
+                {% if user.is_authenticated %}
+
+                <br>
+                
+                 {% else %}
         
-                <a href="{% url 'register' %}" class="btn btn-primary my-2"> Create an account </a>
+                 <a href="{% url 'register' %}" class="btn btn-primary my-2" style="background-color: blueviolet;"> Create an account </a>
+                
+                 {% endif %}
                 
                 
             </div>

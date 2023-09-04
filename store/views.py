@@ -1,28 +1,32 @@
 from django.shortcuts import get_object_or_404, render, redirect
-from . models import Book, User, Order, OrderItem
+from . models import Book, Order, OrderItem
 from . cart import Cart
 from django.http import JsonResponse
 from django.views.decorators.csrf import ensure_csrf_cookie
 from . forms import CreateUserForm, LoginForm
 from django.contrib.auth.models import auth
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate, login, logout, get_user
+from django.contrib.auth.decorators import login_required
 
-
+# API all books
 def store(request):
     book_list = Book.objects.all()
     context = {'books': book_list}
     return render(request, 'store/store.html', context)
 
+# API books by category
 def books_by_category(request, category):
     books = Book.objects.filter(category=category)
     context = {'books': books}
     return render(request, 'store/store.html', context)
-    
+
+# API book's details    
 def book_info(request, slug):
     book = get_object_or_404(Book, slug=slug)
     context = {'book': book}
     return render(request, 'store/book-info.html', context)
 
+# API shopping cart
 def cart_summary(request):
 
     cart = Cart(request)
@@ -67,7 +71,6 @@ def cart_delete(request):
 
         return response
     
-@ensure_csrf_cookie
 def cart_update(request):
     
     cart = Cart(request)
@@ -91,16 +94,9 @@ def cart_update(request):
         return response
 
 def checkout(request):
-
-    if request.user.is_authenticated:
-        full_name = User.objects.get(user=request.user.id)
-        context = {'name': full_name}
-        return render(request, 'store/checkout.html', context)
     
-    else:
-        return render(request, 'store/checkout.html')
+    return render(request, 'store/checkout.html')
 
-@ensure_csrf_cookie
 def complete_order(request):
     if request.POST.get('action') == 'post':
         name = request.POST.get('name')
@@ -109,23 +105,42 @@ def complete_order(request):
         country = request.POST.get('country')
         city = request.POST.get('city')
         zipcode = request.POST.get('zipcode')
+        phone = request.POST.get('phone')
 
-        shipping_address = (f"{address} {country} {city} {zipcode}")
+        shipping_address = (f"{address}, {country}, {city}, {zipcode}")
 
         cart = Cart(request)
 
         total_cost = cart.get_total()
 
-        order = Order.objects.create(full_name=name, email=email, shipping_address=shipping_address)
+        # User with account
+        if request.user.is_authenticated:
+
+            order = Order.objects.create(full_name=name, email=email, amount_paid=total_cost, 
+                                         shipping_address=shipping_address, 
+                                         phone=phone, user=request.user)
+            
+            order_id = order.pk
+            
+            for item in cart:
+                
+                OrderItem.objects.create(order_id=order_id, book=item['book'],
+                                          quantity=item['qty'], price=item['price'], user=request.user)
+
+        # Guest user without an account        
+        else:
+
+            order = Order.objects.create(full_name=name, email=email, amount_paid=total_cost, 
+                                         shipping_address=shipping_address, 
+                                         phone=phone)
+
+            order_id = order.pk
+
+            for item in cart:
+                
+                OrderItem.objects.create(order_id=order_id, book=item['book'], 
+                                         quantity=item['qty'], price=item['price'])
         
-        amount_paid = total_cost
-
-        order_id = order.pk
-
-        for item in cart:
-
-            OrderItem.objects.create(order_id=order_id, book=item['book'], quantity=item['qty'], price=item['price'])
-
         order_success = True    
 
         response = JsonResponse({'success':order_success})
@@ -148,13 +163,14 @@ def register(request):
     if request.method == 'POST':
         form = CreateUserForm(request.POST)
         if form.is_valid():
-            form.save()
-            return redirect('store/my-login.html')
+            user = form.save()
+            user.save()
+            return redirect("my-login")
     
     context = {'form':form}
     
 
-    return render(request, 'store/register.html', context)
+    return render(request, 'store/register.html', context=context)
 
 
 def my_login(request):
@@ -171,18 +187,35 @@ def my_login(request):
             if user is not None:
                 auth.login(request, user)
 
-                return redirect("store")
+                return redirect("dashboard")
             
     context = {'form':form}
 
-    return render(request, 'store/my-login.html', context)
+    return render(request, 'store/my-login.html', context=context)
 
 def user_logout(request):
     auth.logout(request)
     return redirect("store")
+
+@login_required(login_url='my-login')
+def dashboard(request):
+    return render(request, 'store/dashboard.html')
             
 
+@login_required(login_url='my-login')
+def track_orders(request):
 
+    try:
+
+        orders = OrderItem.objects.filter(user=request.user)
+
+        context = {'orders':orders}
+
+        return render(request, 'store/track-orders.html', context=context)
+
+    except:
+
+        return render(request, 'store/track-orders.html')
 
 
 

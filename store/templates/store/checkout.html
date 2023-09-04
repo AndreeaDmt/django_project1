@@ -13,6 +13,8 @@
     {
         
         background-color: rgb(0, 0, 0);
+        background-image: url("https://images.pexels.com/photos/3747468/pexels-photo-3747468.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1");
+        background-size: cover;
     
     }
 
@@ -30,9 +32,9 @@
 
                 <div>
 
-                    <h3> <i class="fa fa-chevron-circle-right" aria-hidden="true"></i> &nbsp; Complete your order </h3>
+                    <h3 style="color: black;"> <i class="fa fa-chevron-circle-right" aria-hidden="true"></i> &nbsp; Complete your order </h3>
 
-                    <p> Please enter in the relevant information below. </p>
+                    <p style="color: black;"> Please enter in the relevant information below. </p>
  
 
 
@@ -42,7 +44,7 @@
 
                     <div class="form-field">
                     
-                        <input class="form-control validate" id="name" type="text" placeholder="Full name*" autocomplete="off" value="{{name.full_name}}" required>
+                        <input class="form-control validate" id="name" type="text" placeholder="Full name*" autocomplete="off" value="" required>
 
                     </div>
 
@@ -52,7 +54,7 @@
 
                     <div class="form-field">
 
-                        <input class="form-control validate" id="email" type="email" placeholder="Email address*" autocomplete="off" value="{{name.email}}" required>
+                        <input class="form-control validate" id="email" type="email" placeholder="Email address*" autocomplete="off" value="" required>
 
                     </div>
 
@@ -73,7 +75,7 @@
 
                     <div class="form-field">
 
-                        <input class="form-control validate" id="city" type="text" placeholder="Country*" autocomplete="off" value="" required>
+                        <input class="form-control validate" id="country" type="text" placeholder="Country*" autocomplete="off" value="" required>
 
                     </div>
 
@@ -94,6 +96,14 @@
                     <div class="form-field">
 
                         <input class="form-control" id="zipcode" type="text" placeholder="Zipcode" autocomplete="off" value="">
+
+                    </div>
+
+                    <br>
+
+                    <div class="form-field">
+
+                        <input class="form-control" id="phone" type="text" placeholder="Phone number" autocomplete="off" value="">
 
                     </div>
             
@@ -145,12 +155,13 @@
                 name: $('#name').val(),
                 email: $('#email').val(),
 
-                address: $('#address1').val(),
+                address: $('#address').val(),
 
                 country: $('#country').val(),
                 city: $('#city').val(),
         
-                zipcodet: $('#zipcode').val(),
+                zipcode: $('#zipcode').val(),
+                phone: $('#phone').val(),
 
 
                 csrfmiddlewaretoken: "{{csrf_token}}",
